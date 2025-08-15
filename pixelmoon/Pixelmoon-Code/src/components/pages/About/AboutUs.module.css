@@ -1,0 +1,311 @@
+/* AboutUs.module.css */
+
+.aboutContainer {
+  min-height: 100vh;
+  background: var(--background-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.aboutContainer.dark {
+  background: var(--background-color);
+}
+
+/* Hero Section */
+.heroSection {
+  background: var(--card-bg-color);
+  border-bottom: 1px solid var(--border-color);
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.heroTitle {
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+.brandText {
+  color: var(--primary-color);
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.heroStats {
+  margin-top: 2rem;
+}
+
+.statNumber {
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.statLabel {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.heroImage {
+  position: relative;
+}
+
+.heroImagePlaceholder {
+  height: 300px;
+  background: var(--hover-color);
+  border: 1px solid var(--border-color);
+}
+
+.heroIcon {
+  color: var(--primary-color);
+  opacity: 0.7;
+}
+
+/* Section Titles */
+.sectionTitle {
+  color: var(--text-color);
+}
+
+.sectionSubtitle {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Service Cards */
+.serviceCard {
+  transition: all 0.3s ease;
+  border-radius: 15px !important;
+  overflow: hidden;
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .serviceCard {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.serviceCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark .serviceCard:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+}
+
+.serviceIcon {
+  padding: 1rem;
+  background: var(--hover-color);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPrimary {
+  color: var(--primary-color);
+}
+
+.iconSuccess {
+  color: #22c55e;
+}
+
+.iconWarning {
+  color: #f59e0b;
+}
+
+.cardTitle {
+  color: var(--text-color);
+}
+
+.cardText {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Mission Section */
+.missionSection {
+  background: var(--card-bg-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.missionImage {
+  position: relative;
+}
+
+.missionImagePlaceholder {
+  height: 250px;
+  background: var(--hover-color);
+  border: 1px solid var(--border-color);
+}
+
+.missionIcon {
+  color: var(--primary-color);
+  opacity: 0.7;
+}
+
+.missionTitle {
+  color: var(--text-color);
+}
+
+.missionText {
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.pointIcon {
+  color: var(--primary-color);
+}
+
+.pointTitle {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.pointText {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Feature Cards */
+.featureCard {
+  background: var(--card-bg-color);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .featureCard:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.featureIconCircle {
+  width: 60px;
+  height: 60px;
+  background: var(--primary-color);
+  color: white;
+}
+
+.featureTitle {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.featureText {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Call to Action Section */
+.ctaSection {
+  background: var(--card-bg-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.ctaTitle {
+  color: var(--text-color);
+}
+
+.ctaText {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.ctaButton {
+  border-radius: 25px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.ctaPrimary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.ctaSecondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color) !important;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .heroStats {
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+  
+  .heroImagePlaceholder,
+  .missionImagePlaceholder {
+    height: 200px;
+  }
+  
+  .serviceCard,
+  .featureCard {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+  
+  .ctaSection .d-flex {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .ctaButton {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.serviceCard,
+.featureCard {
+  animation: fadeInUp 0.6s ease-out;
+}

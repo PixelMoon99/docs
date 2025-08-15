@@ -1,0 +1,9 @@
+.policyContainer {
+  padding: 2rem 0;
+}
+.card {
+  border-radius: 0.5rem;
+}
+.card-title {
+  font-size: 1.75rem;
+}

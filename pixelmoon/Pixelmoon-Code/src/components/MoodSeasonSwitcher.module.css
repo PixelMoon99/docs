@@ -1,0 +1,178 @@
+.glassButton {
+  position: fixed;
+    bottom: 10rem;
+    right: 1.80rem;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 50%;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-weight: 600;
+    width: 50px;
+    height: 50px;
+}
+
+.glassButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buttonContent span {
+  display: none;
+}
+
+.glassMenu {
+  position: fixed;
+  bottom: 9rem;
+  right: 1.25rem;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  min-width: 160px;
+  animation: slideUp 0.3s ease;
+}
+
+.glassMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.glassMenuItem:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
+}
+
+.sunRays {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.3), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  animation: sunPulse 6s infinite ease-in-out;
+}
+
+.heatShimmer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  background-size: 200% 200%;
+  pointer-events: none;
+  z-index: 1;
+  animation: shimmer 4s infinite linear;
+}
+
+.lightning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.lightning.flash {
+  opacity: 1;
+  animation: lightningFlash 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sunPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+
+@keyframes lightningFlash {
+  0% { opacity: 0; }
+  10% { opacity: 0.9; }
+  20% { opacity: 0.3; }
+  30% { opacity: 0.8; }
+  40% { opacity: 0; }
+}
+
+@keyframes snowflakeRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes leafFall {
+  0% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(90deg) translateY(25px); }
+  50% { transform: rotate(180deg) translateY(50px); }
+  75% { transform: rotate(270deg) translateY(75px); }
+  100% { transform: rotate(360deg) translateY(100px); }
+}
+
+@media (min-width: 768px) {
+  .glassButton {
+    bottom: 1.25rem;
+    padding: 12px 20px;
+    border-radius: 50px;
+    width: auto;
+    height: auto;
+  }
+  
+  .buttonContent span {
+    display: inline;
+  }
+  
+  .glassMenu {
+    bottom: 5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .glassMenu {
+    right: 1rem;
+    bottom: 14rem;
+    min-width: 140px;
+  }
+}
