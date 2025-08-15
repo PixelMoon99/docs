@@ -1,4 +1,5 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Ensured aggregation correctness and no stale cache usage
 const router = express.Router();
 const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');

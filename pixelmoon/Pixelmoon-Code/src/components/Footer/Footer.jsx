@@ -21,33 +21,33 @@ const Footer = () => {
               and 24/7 customer support.
             </p>
             <div className={styles.socialLinks}>
-              <a href="https://goo.su/TSZ1vD" aria-label="Facebook" className={styles.socialIcon}>
+              <a href="https://goo.su/TSZ1vD" aria-label="Facebook" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaFacebook />
               </a>
-              <a href="https://twitch.tv/death_by_pixel" aria-label="Twitch" className={styles.socialIcon}>
+              <a href="https://twitch.tv/death_by_pixel" aria-label="Twitch" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaTwitch />
               </a>
-              <a href="https://rb.gy/sxo2f9" aria-label="Instagram" className={styles.socialIcon}>
+              <a href="https://rb.gy/sxo2f9" aria-label="Instagram" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaInstagram />
               </a>
-              <a href="https://wa.link/oskfd2" aria-label="Whatsapp" className={styles.socialIcon}>
+              <a href="https://wa.link/oskfd2" aria-label="Whatsapp" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaWhatsapp />
               </a>
-              <a href="http://www.youtube.com/@PixelMoon-v9p" aria-label="YouTube" className={styles.socialIcon}>
+              <a href="http://www.youtube.com/@PixelMoon-v9p" aria-label="YouTube" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaYoutube />
               </a>
-              <a href="https://discord.gg/vruwvU8Z" aria-label="Discord" className={styles.socialIcon}>
+              <a href="https://discord.gg/vruwvU8Z" aria-label="Discord" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaDiscord />
               </a>
-              <a href="https://x.com/PixelMoonStores?t=UmMMSrAoFhIh1pV31VoBjQ&s=08" aria-label="Twitter/X" className={styles.socialIcon}>
+              <a href="https://x.com/PixelMoonStores?t=UmMMSrAoFhIh1pV31VoBjQ&s=08" aria-label="Twitter/X" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <FaXTwitter />
               </a>
-              <a href="https://www.quora.com/profile/Pixel-Moon?ch=3&oid=3034228526&share=b6744125&srid=5nklmE&target_type=user" aria-label="Quora" className={styles.socialIcon}>
+              <a href="https://www.quora.com/profile/Pixel-Moon?ch=3&oid=3034228526&share=b6744125&srid=5nklmE&target_type=user" aria-label="Quora" className={styles.socialIcon} target="_blank" rel="noopener noreferrer">
                 <SiQuora />
               </a>
             </div>
             <div className={styles.trustpilot}>
-              <a href="https://www.trustpilot.com/review/pixelmoonstore.in" target="_blank" rel="noopener noreferrer" className={styles.trustpilotLink}>
+              <a href="https://www.trustpilot.com/review/pixelmoonstore.in" target="_blank" rel="noopener noreferrer" className={styles.trustpilotLink} aria-label="Trustpilot reviews">
                 <img src="/trustpilot.png" alt="Trustpilot" style={{height:'24px'}} />
                 <span className="ms-2">Reviewed on Trustpilot</span>
               </a>

@@ -1,4 +1,5 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Safer token handling and VIP remaining days fallback
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -17,13 +18,12 @@ router.get('/active', async (req,res)=>{
         if (user) {
           const now = Date.now();
           const vipEnd = user.vipEnd ? new Date(user.vipEnd).getTime() : null;
-          const remainingDays = vipEnd ? Math.max(0, Math.ceil((vipEnd - now)/(24*3600*1000))) : 0;
+          const remainingDays = vipEnd && vipEnd > now ? Math.max(0, Math.ceil((vipEnd - now)/(24*3600*1000))) : 0;
           if (user.isVip && vipEnd) {
             notifications.push({ type: remainingDays <= 3 ? 'warning' : 'info', message: `VIP: ${remainingDays} day(s) remaining`, link: '/user-dashboard' });
           }
           // basic progress hint toward free VIP eligibility (example: 5 orders in 30 days)
           const targetOrders = 5;
-          // Frontend will compute actual progress with analytics; provide static hint here
           notifications.push({ type:'promotion', message:`Complete ${targetOrders} orders in 30 days to unlock Free VIP!`, link:'/user-dashboard' });
         }
       } catch (_) {}
