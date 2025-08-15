@@ -1,7 +1,12 @@
 {
+  // UPDATED 2025-08-15 — Added icons and theme color for PWA readiness
   "name": "Pixelmoon Store",
   "short_name": "Pixelmoon",
   "start_url": "/",
   "display": "standalone",
-  "icons": []
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "256x256", "type": "image/x-icon" }
+  ]
 }

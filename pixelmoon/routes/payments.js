@@ -1,14 +1,28 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Added Joi validation, HMAC verification with idempotency, safer create logic
 const router = express.Router();
 const Transaction = require('../models/Transaction');
 const axios = require('axios');
+const Joi = require('joi');
+const WebhookEvent = require('../models/WebhookEvent');
+const { identifyAndVerify } = require('../lib/webhookVerifier');
 
 // Create a payment (frontend calls this to create invoice)
 // applies 0.5% fee for USDT payments automatically
 router.post('/create', async (req, res) => {
   try {
-    const { amount, currency, description, userId, orderId, methodHint } = req.body;
-    if (!amount || !currency) return res.status(400).json({ error: 'amount and currency required' });
+    const schema = Joi.object({
+      amount: Joi.number().positive().required(),
+      currency: Joi.string().trim().required(),
+      description: Joi.string().allow('', null),
+      userId: Joi.string().allow('', null),
+      orderId: Joi.string().allow('', null),
+      methodHint: Joi.string().allow('', null)
+    });
+    const { value: body, error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { amount, currency, description, userId, orderId, methodHint } = body;
 
     const upperCur = (currency || '').toUpperCase();
     let fee = 0;
@@ -78,20 +92,42 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// Raw webhook endpoint for NowPayments
+// Raw webhook endpoint for NowPayments with signature verification and idempotency
 router.post('/webhook/now', express.raw({ type: '*/*' }), async (req, res) => {
   try {
     const raw = req.body;
+    const headers = req.headers;
+
+    // verify signature
+    const { gateway, eventId } = identifyAndVerify(raw, headers);
+
+    // idempotency check
+    const existing = await WebhookEvent.findOne({ gateway, eventId }).lean();
+    if (existing) return res.status(200).send('ok');
+
     let parsed = {};
     try { parsed = JSON.parse(raw.toString('utf8')); } catch(e){ parsed = null; }
 
-    const tx = await Transaction.create({
-      userId: null,
-      method: 'webhook',
-      amount: parsed && (parsed.price_amount||parsed.price||0),
-      raw: { parsed },
-      status: 'webhook_received'
-    });
+    const orderId = parsed && (parsed.order_id || parsed.invoice_id || parsed.payment_id || '');
+
+    // record webhook event
+    await WebhookEvent.create({ gateway, eventId, payload: parsed, processedAt: new Date() });
+
+    // Try finding a matching transaction by order id captured earlier
+    let tx = null;
+    if (orderId) {
+      tx = await Transaction.findOne({ $or: [ { _id: orderId }, { 'raw.order_id': orderId } ] });
+    }
+    if (!tx) {
+      // fallback: create a record to track
+      tx = await Transaction.create({
+        userId: null,
+        method: 'NOWPAYMENTS',
+        amount: parsed && (parsed.price_amount||parsed.price||0),
+        raw: { parsed, order_id: orderId },
+        status: 'webhook_received'
+      });
+    }
 
     if (parsed && (parsed.payment_status === 'finished' || parsed.status === 'finished' || parsed.payment_status === 'success')) {
       tx.status = 'paid';
@@ -103,7 +139,7 @@ router.post('/webhook/now', express.raw({ type: '*/*' }), async (req, res) => {
     res.status(200).send('ok');
   } catch (e) {
     console.error('webhook error', e);
-    res.status(500).send('error');
+    res.status(400).send('error');
   }
 });
 

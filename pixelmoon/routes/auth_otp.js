@@ -1,4 +1,5 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Input validation for email/OTP and safer responses
 const router = express.Router();
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
@@ -6,10 +7,14 @@ const User = require('../models/User');
 const OTPStore = require('../models/OTPStore');
 const { sendMail } = require('../utils/mailer');
 
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 // request OTP
 router.post('/request', async (req,res)=>{
   const {email} = req.body;
-  if(!email) return res.status(400).json({ok:false,error:'email required'});
+  if(!email || !isValidEmail(email)) return res.status(400).json({ok:false,error:'valid email required'});
   const code = Math.floor(100000 + Math.random()*900000).toString();
   const hash = crypto.createHash('sha256').update(code).digest('hex');
   await OTPStore.create({email, codeHash:hash, expiresAt: new Date(Date.now()+10*60*1000)});
@@ -23,13 +28,13 @@ router.post('/request', async (req,res)=>{
   } else {
     console.log('OTP for',email,':',code);
   }
-  res.json({ok:true, message:'OTP generated. Check your email.'});
+  res.json({ok:true, message:'If the email exists, an OTP has been sent.'});
 });
 
 // verify OTP and signin/signup
 router.post('/verify', async (req,res)=>{
   const {email,code} = req.body;
-  if(!email||!code) return res.status(400).json({ok:false});
+  if(!email||!isValidEmail(email)||!code||!/^\d{6}$/.test(code)) return res.status(400).json({ok:false});
   const hash = crypto.createHash('sha256').update(code).digest('hex');
   const rec = await OTPStore.findOne({email, codeHash:hash, used:false, expiresAt: {$gte: new Date()}});
   if(!rec) return res.status(400).json({ok:false,error:'invalid or expired'});

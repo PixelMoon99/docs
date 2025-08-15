@@ -1,11 +1,26 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Added request validation and safer defaults for pricing compute
 const router = express.Router();
 const ProductPricing = require('../models/ProductPricing');
+const Joi = require('joi');
 
 // Compute pricing given a product input (RP / SOC / USD)
 router.post('/compute', async (req,res)=>{
-  const {productId, source, value, rpToInr=0.0053, socToInr=1.55, usdToInr=89, margins, manualPrices, mode='auto'} = req.body;
-  // margins = {small:5, mid:10, large:15}; manualPrices={retail,reseller,tier1,tier2,tier3}
+  const schema = Joi.object({
+    productId: Joi.string().allow('', null),
+    source: Joi.string().valid('rp','soc','usd').required(),
+    value: Joi.number().positive().required(),
+    rpToInr: Joi.number().positive().default(0.0053),
+    socToInr: Joi.number().positive().default(1.55),
+    usdToInr: Joi.number().positive().default(89),
+    margins: Joi.object({ small:Joi.number(), mid:Joi.number(), large:Joi.number() }).optional(),
+    manualPrices: Joi.object({ retail:Joi.number(), reseller:Joi.number(), tier1:Joi.number(), tier2:Joi.number(), tier3:Joi.number() }).optional(),
+    mode: Joi.string().valid('auto','manual').default('auto')
+  });
+  const { value: body, error } = schema.validate(req.body);
+  if (error) return res.status(400).json({ ok:false, error: error.details[0].message });
+
+  const {productId, source, value, rpToInr, socToInr, usdToInr, margins, manualPrices, mode} = body;
   let costInINR = 0;
   if(source === 'rp') costInINR = value * rpToInr;
   if(source === 'soc') costInINR = value * socToInr;

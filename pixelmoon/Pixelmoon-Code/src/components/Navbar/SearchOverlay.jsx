@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+// UPDATED 2025-08-15 — Accessibility roles, keyboard navigation polish, ensure click navigates/ closes reliably
 import { useTheme } from '../context/ThemeContext';
 import GameCard from '../home/GameCard/GameCard';
 import styles from './SearchOverlay.module.css';
@@ -28,14 +29,11 @@ const SearchOverlay = ({ isOpen, onClose }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isOpen) return;
-      
       if (e.key === 'Escape') {
         onClose();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < games.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex(prev => prev < games.length - 1 ? prev + 1 : prev);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
@@ -80,44 +78,35 @@ const SearchOverlay = ({ isOpen, onClose }) => {
       // Search regular games with the search parameter
       const gamesResponse = await fetch(`${API_BASE}/games?search=${encodeURIComponent(term)}`);
       let allGames = [];
-      
       if (gamesResponse.ok) {
         const gamesData = await gamesResponse.json();
         allGames = gamesData.games || [];
       }
-
       // Search vouchers
       try {
         const vouchersResponse = await fetch(`${API_BASE}/vouchers/available`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
-        
         if (vouchersResponse.ok) {
           const vouchersData = await vouchersResponse.json();
           const matchingVouchers = (vouchersData.vouchers || []).filter(voucher =>
             voucher.name.toLowerCase().includes(term.toLowerCase())
           );
-          
           const sortedVouchers = matchingVouchers.sort((a, b) => {
             const aName = a.name.toLowerCase();
             const bName = b.name.toLowerCase();
             const searchTerm = term.toLowerCase();
-            
             if (aName.startsWith(searchTerm) && !bName.startsWith(searchTerm)) return -1;
             if (bName.startsWith(searchTerm) && !aName.startsWith(searchTerm)) return 1;
-            
             return aName.localeCompare(bName);
           });
-          
           allGames = [...allGames, ...sortedVouchers.map(v=> ({...v, slug: v._id }))];
         }
-      } catch (voucherError) {
-        console.log('Voucher search failed, continuing with games only');
+      } catch {
+        // continue with games only
       }
-
       setGames(allGames);
     } catch (error) {
-      console.error('Search error:', error);
       setGames([]);
     } finally {
       setLoading(false);
@@ -126,14 +115,11 @@ const SearchOverlay = ({ isOpen, onClose }) => {
 
   const sortByRelevance = (games, searchTerm) => {
     const term = searchTerm.toLowerCase().trim();
-    
     return games.sort((a, b) => {
       const nameA = (a.name||'').toLowerCase();
       const nameB = (b.name||'').toLowerCase();
-      
       const scoreA = calculateRelevanceScore(nameA, term);
       const scoreB = calculateRelevanceScore(nameB, term);
-      
       return scoreB - scoreA;
     });
   };
@@ -178,42 +164,38 @@ const SearchOverlay = ({ isOpen, onClose }) => {
     const value = e.target.value;
     setSearchTerm(value);
     setSelectedIndex(-1);
-
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => { searchGames(value); }, 300);
   };
 
   // Highlight matching text in game names
-  const highlightMatch = (text, searchTerm) => {
-    if (!searchTerm.trim()) return text;
-    
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
-      regex.test(part) ? 
-        <mark key={index} className={styles.highlight}>{part}</mark> : 
-        part
-    );
+  const highlightMatch = (text, term) => {
+    if (!term || !term.trim()) return text;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = String(text).split(regex);
+    return parts.map((part, index) => regex.test(part) ? (
+      <mark key={index} className={styles.highlight}>{part}</mark>
+    ) : part);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className={`${styles.overlay} ${theme === 'dark' ? styles.dark : ''}`}>
+    <div className={`${styles.overlay} ${theme === 'dark' ? styles.dark : ''}`} role="dialog" aria-modal="true">
       <div className={styles.backdrop} />
       <div 
         ref={overlayRef}
         className={`${styles.panel} ${isOpen ? styles.slideIn : styles.slideOut}`}
+        role="region"
+        aria-label="Search results"
       >
         {/* Search Header */}
         <div className={styles.searchHeader}>
-          <div className={styles.searchIcon}>
+          <div className={styles.searchIcon} aria-hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
             </svg>
           </div>
-          
           <input
             ref={searchInputRef}
             type="text"
@@ -221,8 +203,8 @@ const SearchOverlay = ({ isOpen, onClose }) => {
             value={searchTerm}
             onChange={handleSearchChange}
             className={styles.searchInput}
+            aria-label="Search games"
           />
-          
           <button 
             onClick={onClose}
             className={styles.closeButton}
@@ -265,15 +247,15 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                   {games.length} game{games.length !== 1 ? 's' : ''} found
                 </span>
               </div>
-              
-              <div className={styles.gamesGrid}>
+              <div className={styles.gamesGrid} role="list">
                 {games.slice(0, 20).map((game, index) => (
                   <div 
                     key={game._id || game.id || index}
-                    className={`${styles.gameCardWrapper} ${
-                      selectedIndex === index ? styles.selected : ''
-                    }`}
+                    className={`${styles.gameCardWrapper} ${selectedIndex === index ? styles.selected : ''}`}
                     onClick={() => { setSelectedIndex(index); navigate(`/games/${game.slug || game._id || game.id}`); onClose(); }}
+                    role="listitem"
+                    tabIndex={0}
+                    onKeyDown={(e)=> { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/games/${game.slug || game._id || game.id}`); onClose(); } }}
                   >
                     <GameCard 
                       game={{
@@ -284,10 +266,9 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                   </div>
                 ))}
               </div>
-
               {games.length > 20 && (
                 <div className={styles.seeMoreFooter}>
-                  <button className={styles.seeMoreButton}>
+                  <button className={styles.seeMoreButton} onClick={()=> { navigate(`/games?search=${encodeURIComponent(searchTerm)}`); onClose(); }}>
                     See all {games.length} results
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>

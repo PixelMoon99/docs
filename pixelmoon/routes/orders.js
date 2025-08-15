@@ -1,9 +1,12 @@
 const express = require('express');
+// UPDATED 2025-08-15 — Added invoice PDF generation and email for all successful orders
 const router = express.Router();
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const auth = require('../middlewares/auth');
 const { sendMail } = require('../utils/mailer');
+const { generateInvoicePDF } = require('../utils/invoiceGenerator');
+const path = require('path');
 
 // List orders for current user
 router.get('/', auth, async (req,res)=>{
@@ -24,13 +27,16 @@ router.post('/', auth, async (req,res)=>{
       user.walletBalance = +(user.walletBalance - amount).toFixed(2);
       await user.save();
       const tx = await Transaction.create({ userId: String(user._id), method: 'ORDER_WALLET', amount: amount, raw: { description:'Order via wallet' }, status:'paid' });
+      // generate invoice
+      const outPath = path.join(__dirname, '..', 'public', 'uploads', `invoice-${tx._id}.pdf`);
+      await generateInvoicePDF({ id: tx._id, amount }, outPath);
       // send confirmation email
       try {
         if (user.email && process.env.SMTP_USER) {
-          await sendMail({ to: user.email, subject: 'Order Confirmation', html: `<p>Your order ${tx._id} has been confirmed. Amount: ₹${amount}</p>`, text: `Order ${tx._id} confirmed.` });
+          await sendMail({ to: user.email, subject: 'Order Confirmation', html: `<p>Your order ${tx._id} has been confirmed. Amount: ₹${amount}. <a href="${process.env.DOMAIN || ''}/uploads/${path.basename(outPath)}">Download invoice</a></p>`, text: `Order ${tx._id} confirmed.` });
         }
       } catch (_) {}
-      return res.json({ success:true, id: tx._id });
+      return res.json({ success:true, id: tx._id, invoiceUrl: `/uploads/${path.basename(outPath)}` });
     }
     // fallback phonepe stub
     const tx = await Transaction.create({ userId: String(req.user._id), method: 'ORDER_UPI', amount: amount, raw: { description:'Order via UPI' }, status:'pending' });

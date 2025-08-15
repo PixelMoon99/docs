@@ -1,4 +1,5 @@
 /**
+ * // UPDATED 2025-08-15 — Security hardening, rate limiting, webhook/raw routing, geo alias, and PWA/static tweaks
  * Basic server.js added/merged by assistant.
  * - uses express
  * - registers raw parser for webhook route only
@@ -21,6 +22,9 @@ const { identifyAndVerify } = require('./lib/webhookVerifier');
 
 const app = express();
 
+// trust proxy for correct IPs behind reverse proxies/CDN
+app.set('trust proxy', 1);
+
 // CORS: allow frontend origins from PUBLIC_URL (.env)
 app.use(cors({ origin: (process.env.PUBLIC_URL || '').split(',').filter(Boolean).length ? (process.env.PUBLIC_URL || '').split(',') : true, credentials: true }));
 // Preflight for all
@@ -29,6 +33,10 @@ app.use(helmet());
 app.use(compression());
 const limiter = rateLimit({ windowMs: 1*60*1000, max: 200 });
 app.use(limiter);
+
+// Additional strict limiters for sensitive endpoints
+const authLimiter = rateLimit({ windowMs: 15*60*1000, max: 60 });
+const otpLimiter = rateLimit({ windowMs: 10*60*1000, max: 15 });
 
 // connect to MongoDB (optional)
 const MONGO_URI = process.env.MONGO_URI || '';
@@ -48,9 +56,10 @@ app.use('/public', express.static(publicDir, { maxAge: '7d' }));
 // normal json routes
 app.use(express.json());
 
-// raw body parser only for webhook endpoint
+// raw body parser only for webhook endpoint(s)
 app.use('/api/nowpayments/webhook', express.raw({ type: 'application/json' }));
 app.use('/api/matrixsols/webhook', express.raw({ type: 'application/json' }));
+app.use('/api/v1/payments/webhook/now', express.raw({ type: 'application/json' }));
 
 // Example webhook endpoint (NOWPayments & MatrixSols)
 app.post('/api/nowpayments/webhook', async (req, res) => {
@@ -82,6 +91,12 @@ app.get('/api/v1/geo', (req, res) => {
   const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
   res.json({ ok:true, country, ip });
 });
+// Alias for frontend using /geo without prefix
+app.get('/geo', (req, res) => {
+  const country = (req.headers['cf-ipcountry'] || req.headers['x-geo-country'] || req.headers['x-vercel-ip-country'] || '').toUpperCase() || null;
+  const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  res.json({ ok:true, country, ip });
+});
 
 let PORT = Number(process.env.PORT || 5000);
 
@@ -103,6 +118,10 @@ const blogsRoutes = require('./routes/blogs');
 const ordersRoutes = require('./routes/orders');
 
 const authMiddleware = require('./middlewares/auth');
+
+// mount rate limiters on sensitive routes
+app.use('/api/v1/auth', authLimiter);
+app.use('/api/v1/auth/otp', otpLimiter);
 
 app.use('/api/v1/vip', vipRoutes);
 app.use('/api/v1/pricing', authMiddleware, pricingRoutes);
