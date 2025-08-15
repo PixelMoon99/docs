@@ -1,2 +1,12 @@
-self.addEventListener('install', function(e){ self.skipWaiting(); });
-self.addEventListener('fetch', function(e){ /* noop for now */ });
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (event) => {
+  // Simple network-first strategy
+  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+});

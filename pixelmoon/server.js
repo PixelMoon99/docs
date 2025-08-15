@@ -30,11 +30,15 @@ app.use(compression());
 const limiter = rateLimit({ windowMs: 1*60*1000, max: 200 });
 app.use(limiter);
 
-// connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/pixelmoon';
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(()=> console.log('MongoDB connected'))
-  .catch(err=> console.error('MongoDB connection error', err));
+// connect to MongoDB (optional)
+const MONGO_URI = process.env.MONGO_URI || '';
+if (MONGO_URI) {
+  mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(()=> console.log('MongoDB connected'))
+    .catch(()=> console.warn('MongoDB not connected; check MONGO_URI'));
+} else {
+  console.info('Skipping DB connection: MONGO_URI not set');
+}
 
 // Serve static uploads and public assets
 const publicDir = path.join(__dirname, 'public');
@@ -72,6 +76,13 @@ app.post('/api/nowpayments/webhook', async (req, res) => {
 // Basic health
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+// Simple geo endpoint for currency/region logic
+app.get('/api/v1/geo', (req, res) => {
+  const country = (req.headers['cf-ipcountry'] || req.headers['x-geo-country'] || req.headers['x-vercel-ip-country'] || '').toUpperCase() || null;
+  const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  res.json({ ok:true, country, ip });
+});
+
 let PORT = Number(process.env.PORT || 5000);
 
 // Additional feature routes
@@ -105,7 +116,7 @@ app.use('/api/v1/auth/otp', otpAuthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/wallet', authMiddleware, walletRoutes);
 app.use('/api/v1/notifications', notificationsRoutes);
-app.use('/api/v1/games', authMiddleware, gamesRoutes);
+app.use('/api/v1/games', gamesRoutes);
 app.use('/api/v1/blogs', blogsRoutes);
 app.use('/api/v1/orders', ordersRoutes);
 
@@ -135,7 +146,6 @@ function startServer(port){
     }
   });
 }
-startServer(PORT);
 
 // --- API docs (Swagger) ---
 const swaggerOptions = {
@@ -151,7 +161,19 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Mount public api (ensure Product model exists)
 const publicApi = require('./routes/public_api');
 app.use('/api', publicApi);
+app.use('/api/v1', publicApi);
 
 // mount admin api keys (protect with admin auth)
 const adminApiKeys = require('./routes/admin_api_keys');
 app.use('/admin/api-keys', authMiddleware, adminApiKeys);
+
+// --- Serve frontend build in production ---
+const distDir = path.join(__dirname, 'Pixelmoon-Code', 'dist');
+app.use(express.static(distDir, { maxAge: '7d' }));
+app.get('*', (req, res) => {
+  // do not shadow API paths
+  if (req.path.startsWith('/api') || req.path.startsWith('/admin')) return res.status(404).json({ ok:false, error:'Not found' });
+  return res.sendFile(path.join(distDir, 'index.html'));
+});
+
+startServer(PORT);

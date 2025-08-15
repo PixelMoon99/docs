@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Navbar.module.css';
 import SearchOverlay from './SearchOverlay';
+import { useCurrency } from '../context/CurrencyContext.jsx';
 
 const Navbar = () => {
   const { theme } = useTheme();
@@ -13,6 +14,7 @@ const Navbar = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const navigate = useNavigate();
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+  const { currency, setCurrency } = useCurrency();
 
    useEffect(() => {
     const handleClickOutside = (event) => {
@@ -123,6 +125,12 @@ const Navbar = () => {
           
           <div className={styles.themeToggleWrapper}>
             <ThemeToggle />
+          </div>
+          
+          <div className={styles.themeToggleWrapper}>
+            <button className={styles.loginButton} onClick={()=> setCurrency(currency === 'INR' ? 'USD' : 'INR')}>
+              {currency}
+            </button>
           </div>
           
           {isAuthenticated ? (

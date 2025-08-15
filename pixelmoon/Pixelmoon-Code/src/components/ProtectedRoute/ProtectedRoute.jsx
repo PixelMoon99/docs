@@ -13,7 +13,6 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   }
 
   if (!user) {
-    // Show login prompt
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -30,8 +29,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     );
   }
 
-  if (adminOnly && user.role !== 'admin') {
-    // Show access denied for non-admin users
+  if (adminOnly && !(user.role === 'admin' || user.role === 'master_admin')) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
