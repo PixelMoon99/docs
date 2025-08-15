@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+
+:root {
+  /* Light Theme Colors */
+  --primary-color: #e73c38;  
+  --secondary-color: #ffffff; 
+  --text-color: #333333;
+  --background-color: #f5f5f5;
+  --card-bg-color: #ffffff;
+  --nav-text-color: #333333;
+  --border-color: #e0e0e0;
+  --button-text-color: #ffffff;
+  --hero-text-color: #ffffff;
+  --footer-bg-color: #333333;
+  --footer-text-color: #ffffff;
+  --navbar-height: 2px; /* Adjust this to match your actual navbar height */
+  --footer-height: 100px; /* Adjust this to match your actual footer height */
+}
+
+[data-theme='dark'] {
+  
+  --primary-color: #0e86d4;  
+  --secondary-color: #222222; 
+  --text-color: #e0e0e0;
+  --background-color: #121212;
+  --card-bg-color: #1e1e1e;
+  --nav-text-color: #f5f5f5;
+  --border-color: #333333;
+  --button-text-color: #ffffff;
+  --hero-text-color: #ffffff;
+  --footer-bg-color: #0a0a0a;
+  --footer-text-color: #e0e0e0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 60px; /* Smaller mobile navbar height */
+  }
+}
+
+:root {
+  --notification-z-index: 9999;
+}
+/* Transition for theme changes */
+/* .theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+} */
+

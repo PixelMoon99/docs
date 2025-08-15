@@ -1,0 +1,223 @@
+.container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 200px;
+}
+
+.exportBtn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.addBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.formContainer {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+}
+
+.formActions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.formActions button[type="submit"] {
+  background: #28a745;
+  color: white;
+}
+
+.formActions button[type="button"] {
+  background: #6c757d;
+  color: white;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  min-width: 1200px;
+}
+
+.table th,
+.table td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.productName {
+  font-weight: 600;
+  color: #495057;
+  min-width: 150px;
+}
+
+.editableCell {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  border-radius: 3px;
+  width: 80px;
+  background: #fff;
+}
+
+.editableCell:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.calculatedField {
+  font-weight: 600;
+  background: #f8f9fa;
+}
+
+.profitHigh {
+  color: #28a745;
+  background: #d4edda;
+}
+
+.profitMedium {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.profitLow {
+  color: #721c24;
+  background: #f8d7da;
+}
+
+.ordersCount {
+  font-weight: 500;
+  color: #495057;
+}
+
+.editBtn {
+  background: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.deleteBtn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.metaRow {
+  background: #f8f9fa;
+}
+
+.metaInfo {
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+  padding: 4px 8px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: center;
+  }
+
+  .searchInput {
+    min-width: 150px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .editableCell {
+    width: 60px;
+    font-size: 12px;
+  }
+}

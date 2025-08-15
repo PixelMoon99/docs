@@ -1,0 +1,7 @@
+{
+  "name": "Pixelmoon Store",
+  "short_name": "Pixelmoon",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": []
+}

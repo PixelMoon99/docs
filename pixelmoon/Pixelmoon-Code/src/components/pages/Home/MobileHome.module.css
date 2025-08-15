@@ -1,0 +1,457 @@
+.mobileHome {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 80px;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+.mobileHome.dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.heroSection {
+  position: relative;
+  background: linear-gradient(180deg, #a20000 0%, #e87a7a 35%, #f2b7b7 70%, #fdf6f2 100%);
+  padding: 1rem 1rem 4rem 1rem; /* Increased bottom padding for buttons */
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  min-height: 400px; /* Increased height */
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400'%3E%3Cpath d='M0,50 Q300,20 600,50 T1200,50 L1200,150 Q900,120 600,150 T0,150 Z' fill='%23a20000' opacity='0.8'/%3E%3Cpath d='M0,120 Q400,90 800,120 T1200,120 L1200,220 Q800,190 400,220 T0,220 Z' fill='%23e87a7a' opacity='0.7'/%3E%3Cpath d='M0,190 Q600,160 1200,190 L1200,290 Q600,260 0,290 Z' fill='%23f2b7b7' opacity='0.6'/%3E%3Cpath d='M0,260 Q300,230 600,260 T1200,260 L1200,360 Q900,330 600,360 T0,360 Z' fill='%23fdf6f2' opacity='0.8'/%3E%3C/svg%3E") no-repeat center;
+  background-size: cover;
+  animation: waveFloat 8s ease-in-out infinite;
+  z-index: 1;
+}
+
+.heroSection::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z' fill='%23dc2626' fill-opacity='0.2'/%3E%3C/svg%3E") no-repeat center bottom;
+  background-size: cover;
+  z-index: 2;
+}
+
+@keyframes waveFloat {
+  0%, 100% { 
+    transform: translateY(0) scaleX(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: translateY(-5px) scaleX(1.02);
+    opacity: 0.9;
+  }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.walletIcon {
+  font-size: 1.2rem;
+}
+
+.walletBalance {
+  font-weight: bold;
+  color: white;
+}
+
+.bannerContainer {
+  position: relative;
+  width: 100%;
+  height: 220px; /* Increased from 180px */
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 2rem; /* Increased margin */
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  z-index: 3;
+}
+
+.banner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.banner.active {
+  opacity: 1;
+}
+
+.banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bannerOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  padding: 1rem;
+}
+
+.bannerOverlay h2 {
+  color: white;
+  font-size: 1.2rem;
+  margin: 0;
+  text-transform: uppercase;
+}
+.bannerDots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 4;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.dot.activeDot {
+  background: white;
+}
+
+
+.quickActions {
+  position: absolute;
+  bottom: -20px; /* Adjusted positioning */
+  left: 1rem;
+  right: 1rem;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem; /* Reduced gap */
+  padding: 1rem 0.5rem; /* Adjusted padding */
+  border-radius: 15px;
+}
+
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+}
+
+.actionIcon {
+  width: 45px; /* Slightly smaller */
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem; /* Slightly smaller icon */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.actionButton:active .actionIcon {
+  transform: scale(0.95);
+}
+
+.actionLabel {
+  font-size: 0.7rem; /* Slightly smaller text */
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+
+.section {
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
+.section:first-of-type {
+  margin-top: 2rem; /* Add space for floating buttons */
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.dark .sectionTitle {
+  color: #fff;
+}
+.horizontal {
+  min-width: 150px;
+  flex-shrink: 0;
+}
+.horizontalScroll {
+  display: flex;
+  gap: 0.5rem;              /* reduce gap between cards (was 1rem) */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  
+  padding-bottom: 0.5rem;   /* keep if needed for scrollbar spacing */
+  
+  /* Optional: add horizontal padding so cards aren’t flush at edges,
+     or remove if you already have section padding: */
+  /* padding: 0 1rem; */
+  
+  /* Add scroll-snap for nicer alignment */
+  scroll-snap-type: x mandatory;
+}
+.horizontalScroll::-webkit-scrollbar {
+  height: 4px;
+}
+.horizontalScroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.horizontalScroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+
+.gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  justify-items: center;
+  padding: 0 0.5rem;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+
+
+/* Blog section styles */
+.blogSection {
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
+
+.blogCard {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.blogCard:hover {
+  transform: translateY(-2px);
+}
+
+.blogImage {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.blogContent {
+  padding: 0.75rem;
+}
+
+.blogTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blogMeta {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 0;
+}
+
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(45deg, #e63946, #f77f00);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+  margin-top: 1rem;
+}
+
+.viewAllButton:hover {
+  transform: translateY(-1px);
+  color: white;
+}
+
+
+@media (max-width: 380px) {
+  .quickActions {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  justify-items: center;
+  /* Optional: if you want a max-width container so cards don’t stretch too wide on large screens: */
+  /* max-width: 600px; margin: 0 auto; */
+}
+
+
+}
+
+@media (max-width: 320px) {
+  .quickActions {
+    gap: 0.25rem;
+    padding: 1rem 0.25rem;
+  }
+  
+  .actionIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  
+  .actionLabel {
+    font-size: 0.65rem;
+  }
+}
+
+
+.categoriesSection {
+  margin: 1rem 0 2rem 0;
+  padding: 0 1rem;
+}
+
+.categoriesScroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+}
+
+.categoriesScroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.categoriesScroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.categoriesScroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  min-width: 80px;
+  scroll-snap-align: start;
+}
+
+.categoryIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+
+.categoryCard.active .categoryIcon {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.categoryName {
+  font-size: 0.75rem;
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.categoryCard.active .categoryName {
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.dark .categoryCard.active .categoryName {
+  color: #ef4444;
+}
+
+.trustpilotSection {
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
