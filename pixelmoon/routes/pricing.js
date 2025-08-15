@@ -39,7 +39,20 @@ router.post('/compute', async (req,res)=>{
     productId, source, sourceCost:value, exchangeRateRp:rpToInr, exchangeRateUsd:usdToInr,
     costInINR, retailPrice:retail, resellerPrice:reseller, tierPrices, lastUpdated: new Date()
   }, {upsert:true, new:true});
-  res.json({ok:true, pricing:doc});
+
+  // Return region-ready prices: INR and USD
+  const toUSD = (inr)=> +(inr / (usdToInr||89)).toFixed(2);
+  res.json({ok:true, pricing:{
+    ...doc.toObject(),
+    currency: 'INR',
+    retailPriceUSD: toUSD(retail),
+    resellerPriceUSD: toUSD(reseller),
+    tierPricesUSD: {
+      tier1: toUSD(tierPrices.tier1),
+      tier2: toUSD(tierPrices.tier2),
+      tier3: toUSD(tierPrices.tier3),
+    }
+  }});
 });
 
 module.exports = router;

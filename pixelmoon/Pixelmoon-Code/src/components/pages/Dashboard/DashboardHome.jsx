@@ -10,54 +10,56 @@ export const DashboardHome = () => {
     walletBalance: 0
   });
   const [loading, setLoading] = useState(true);
- const API_URL = import.meta.env.VITE_API_URL || 'https://pixelmoonstore.in/api';
+  const [vip, setVip] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || 'https://pixelmoonstore.in/api';
+  
   useEffect(() => {
     const fetchDashboardData = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-    const [walletResponse, ordersResponse] = await Promise.all([
-      fetch(`${API_URL}/wallet/balance`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }),
-      fetch(`${API_URL}/orders`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-    ]);
+        const [walletResponse, ordersResponse, vipResp] = await Promise.all([
+          fetch(`${API_URL}/wallet/balance`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/orders`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/vip/status/me`, { headers: { 'Authorization': `Bearer ${token}` } }).catch(()=>null)
+        ]);
 
-    let walletBalance = 0;
-    if (walletResponse.ok) {
-      const walletData = await walletResponse.json();
-      walletBalance = parseFloat(walletData.data.balanceRupees) || 0;
-    }
+        let walletBalance = 0;
+        if (walletResponse?.ok) {
+          const walletData = await walletResponse.json();
+          walletBalance = parseFloat(walletData.data.balanceRupees) || 0;
+        }
 
-    let totalOrders = 0;
-    if (ordersResponse.ok) {
-      const ordersData = await ordersResponse.json();
-      totalOrders = ordersData.orders?.length || 0;
-    }
+        let totalOrders = 0;
+        if (ordersResponse?.ok) {
+          const ordersData = await ordersResponse.json();
+          totalOrders = ordersData.orders?.length || 0;
+        }
 
-    setStats({ walletBalance, totalOrders });
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+        if (vipResp && vipResp.ok) {
+          const v = await vipResp.json();
+          if (v.ok) setVip(v.vip);
+        }
+
+        setStats({ walletBalance, totalOrders });
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchDashboardData();
   }, []);
 
   if (loading) {
-      return (
-        <div className={styles.loadingContainer}>
-          <RefreshCw className={styles.loadingSpinner} size={32} />
-          <p>Loading dashboard...</p>
-          
-          
-        </div>
-      );
-    }
+    return (
+      <div className={styles.loadingContainer}>
+        <RefreshCw className={styles.loadingSpinner} size={32} />
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboardPage}>
@@ -65,22 +67,16 @@ export const DashboardHome = () => {
         <h2>Welcome Back!</h2>
         <p>Here's what's happening with your account</p>
       </div>
+
+      {vip && vip.isVip && (
+        <div className="alert alert-info" role="alert">
+          VIP Active — Remaining days: {vip.remainingDays}
+        </div>
+      )}
       
       <div className={styles.statsGrid}>
-        <StatCard
-          title="Total Orders"
-          value={stats.totalOrders}
-          icon={ShoppingBag}
-          trend={12}
-          color="primary"
-        />
-        <StatCard
-          title="Wallet Balance"
-          value={`₹${stats.walletBalance.toFixed(2)}`}
-          icon={Wallet}
-          trend={5}
-          color="success"
-        />
+        <StatCard title="Total Orders" value={stats.totalOrders} icon={ShoppingBag} trend={12} color="primary" />
+        <StatCard title="Wallet Balance" value={`₹${stats.walletBalance.toFixed(2)}`} icon={Wallet} trend={5} color="success" />
       </div>
       
       <div className={styles.quickActions}>

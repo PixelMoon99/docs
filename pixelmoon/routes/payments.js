@@ -7,7 +7,7 @@ const axios = require('axios');
 // applies 0.5% fee for USDT payments automatically
 router.post('/create', async (req, res) => {
   try {
-    const { amount, currency, description, userId, orderId } = req.body;
+    const { amount, currency, description, userId, orderId, methodHint } = req.body;
     if (!amount || !currency) return res.status(400).json({ error: 'amount and currency required' });
 
     const upperCur = (currency || '').toUpperCase();
@@ -31,7 +31,7 @@ router.post('/create', async (req, res) => {
       try {
         const body = {
           price_amount: finalAmount,
-          price_currency: upperCur.includes('USDT') ? 'USDT' : upperCur,
+          price_currency: 'USDT',
           order_id: orderId || tx._id.toString(),
           success_url: process.env.PAYMENTS_REDIRECT_URL || ((process.env.DOMAIN || '') + '/payment/success'),
           cancel_url: process.env.PAYMENTS_CANCEL_URL || ((process.env.DOMAIN || '') + '/payment/callback'),
@@ -48,7 +48,29 @@ router.post('/create', async (req, res) => {
       }
     }
 
-    // INR and other currencies path (MatrixSoul/UPI) could be added here
+    // INR path: MatrixSoul or custom UPI
+    if ((upperCur === 'INR' || upperCur === '₹' || methodHint === 'MATRIXSOUL') && process.env.MATRIXSOL_API_KEY) {
+      try {
+        // placeholder: construct a simple payload; vendor docs may vary
+        const payload = {
+          amount: finalAmount,
+          currency: 'INR',
+          order_id: orderId || tx._id.toString(),
+          purpose: description || 'PixelMoon Order',
+          callback_url: process.env.MATRIXSOL_WEBHOOK_URL || ((process.env.DOMAIN || '') + '/api/matrixsols/webhook')
+        };
+        const resp = await axios.post('https://api.matrixsoul.example.com/create', payload, {
+          headers: { 'Authorization': `Bearer ${process.env.MATRIXSOL_API_KEY}` }
+        });
+        tx.raw.matrixsoul = resp.data;
+        await tx.save();
+        return res.json({ ok:true, txId: tx._id, checkout: resp.data });
+      } catch (e) {
+        console.warn('MatrixSoul create failed:', e.message || e);
+      }
+    }
+
+    // Fallback simple response
     return res.json({ ok: true, txId: tx._id, amount: finalAmount, fee });
   } catch (e) {
     console.error('create payment error', e);

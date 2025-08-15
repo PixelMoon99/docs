@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const OTPStore = require('../models/OTPStore');
+const { sendMail } = require('../utils/mailer');
 
 // request OTP
 router.post('/request', async (req,res)=>{
@@ -11,9 +13,17 @@ router.post('/request', async (req,res)=>{
   const code = Math.floor(100000 + Math.random()*900000).toString();
   const hash = crypto.createHash('sha256').update(code).digest('hex');
   await OTPStore.create({email, codeHash:hash, expiresAt: new Date(Date.now()+10*60*1000)});
-  // In production: send code by email. Here we log it for developer.
-  console.log('OTP for',email,':',code);
-  res.json({ok:true, message:'OTP generated and (in dev) logged to server console.'});
+  // Send via email if SMTP is configured; otherwise log in dev
+  if (process.env.SMTP_USER && process.env.SMTP_HOST) {
+    try {
+      await sendMail({ to: email, subject: 'Your PixelMoon Login OTP', html: `<p>Your OTP is <b>${code}</b>. It expires in 10 minutes.</p>`, text: `Your OTP is ${code}` });
+    } catch (e) {
+      console.warn('Failed to send OTP email', e && e.message);
+    }
+  } else {
+    console.log('OTP for',email,':',code);
+  }
+  res.json({ok:true, message:'OTP generated. Check your email.'});
 });
 
 // verify OTP and signin/signup
@@ -29,9 +39,8 @@ router.post('/verify', async (req,res)=>{
     user = new User({email});
     await user.save();
   }
-  // simple token (placeholder)
-  const token = crypto.randomBytes(24).toString('hex');
-  res.json({ok:true, token, user});
+  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'please_change_this_random_secret', { expiresIn: '7d' });
+  res.json({ok:true, token, user: { id:user._id, email:user.email, role:user.role }});
 });
 
 module.exports = router;

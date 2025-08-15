@@ -104,14 +104,6 @@ const BlogsListPage = () => {
 }
                       </p>
                       <div className="d-flex justify-content-between align-items-center mt-auto">
-                        <small className="text-muted">
-                          <i className="bi bi-calendar me-1"></i>
-                          {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </small>
                         <span className="text-primary fw-semibold">
                           Read More
                           <i className="bi bi-arrow-right ms-1"></i>

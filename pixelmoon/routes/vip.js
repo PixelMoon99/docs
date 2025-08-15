@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const VIPTier = require('../models/VIPTier');
+const auth = require('../middlewares/auth');
 
 // Admin: define tiers (seed)
 router.get('/tiers', async (req,res)=>{
@@ -67,6 +68,15 @@ router.post('/set/:userId', async (req,res)=>{
 router.get('/status/:userId', async (req,res)=>{
   const user = await User.findById(req.params.userId).lean();
   if(!user) return res.status(404).json({ok:false});
+  const now = Date.now();
+  const remainingDays = user.vipEnd ? Math.max(0, Math.ceil((new Date(user.vipEnd).getTime()-now)/(24*3600*1000))) : 0;
+  const expired = !!(user.vipEnd && new Date(user.vipEnd) < new Date());
+  res.json({ok:true, vip: { isVip: !!user.isVip && !expired, tier: user.vipTier||null, remainingDays }});
+});
+
+// Current user convenience endpoint
+router.get('/status/me', auth, async (req,res)=>{
+  const user = req.user;
   const now = Date.now();
   const remainingDays = user.vipEnd ? Math.max(0, Math.ceil((new Date(user.vipEnd).getTime()-now)/(24*3600*1000))) : 0;
   const expired = !!(user.vipEnd && new Date(user.vipEnd) < new Date());

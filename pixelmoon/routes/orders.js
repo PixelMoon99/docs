@@ -3,6 +3,7 @@ const router = express.Router();
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const auth = require('../middlewares/auth');
+const { sendMail } = require('../utils/mailer');
 
 // List orders for current user
 router.get('/', auth, async (req,res)=>{
@@ -23,6 +24,12 @@ router.post('/', auth, async (req,res)=>{
       user.walletBalance = +(user.walletBalance - amount).toFixed(2);
       await user.save();
       const tx = await Transaction.create({ userId: String(user._id), method: 'ORDER_WALLET', amount: amount, raw: { description:'Order via wallet' }, status:'paid' });
+      // send confirmation email
+      try {
+        if (user.email && process.env.SMTP_USER) {
+          await sendMail({ to: user.email, subject: 'Order Confirmation', html: `<p>Your order ${tx._id} has been confirmed. Amount: ₹${amount}</p>`, text: `Order ${tx._id} confirmed.` });
+        }
+      } catch (_) {}
       return res.json({ success:true, id: tx._id });
     }
     // fallback phonepe stub
