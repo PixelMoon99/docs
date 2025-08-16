@@ -143,9 +143,6 @@ router.post('/webhook/now', express.raw({ type: '*/*' }), async (req, res) => {
   }
 });
 
-module.exports = router;
-
-
 // List payments (basic filters)
 router.get('/payments', async (req, res) => {
   try {
@@ -165,3 +162,5 @@ router.get('/payments', async (req, res) => {
     res.status(500).json({ ok: false, error: e.message });
   }
 });
+
+module.exports = router;

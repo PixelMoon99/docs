@@ -37,13 +37,20 @@ router.get('/check-username', async (req, res) => {
   try {
     const { username } = req.query;
     if (!username || username.trim().length < 3) return res.status(400).json({ ok:false, valid:false, error:'too_short' });
+    
     // Example rules: alphanumeric and underscores only
     const validFormat = /^[a-zA-Z0-9_]+$/.test(username);
     if (!validFormat) return res.json({ ok:true, valid:false, reason:'invalid_format' });
+    
     // Check reserved names
-    const reserved = ['admin','support','pixelmoon'];
+    const reserved = ['admin','support','pixelmoon','master','root','system'];
     if (reserved.includes(username.toLowerCase())) return res.json({ ok:true, valid:false, reason:'reserved' });
-    // TODO: check database for existing usernames if you store them
+    
+    // Check database for existing usernames
+    const User = require('../models/User');
+    const existingUser = await User.findOne({ username: username.trim() }).lean();
+    if (existingUser) return res.json({ ok:true, valid:false, reason:'taken' });
+    
     return res.json({ ok:true, valid:true });
   } catch (e) {
     res.status(500).json({ ok:false, valid:false, error: e.message });
