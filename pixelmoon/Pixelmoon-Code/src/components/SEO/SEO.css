@@ -1,0 +1,11 @@
+/* UPDATED 2025-01-27 — SEO component styles */
+.seo-component {
+  /* This component doesn't render visible elements */
+  display: none;
+}
+
+/* Ensure meta tags are properly hidden */
+.seo-component meta,
+.seo-component script {
+  display: none;
+}
